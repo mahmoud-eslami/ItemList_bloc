@@ -1,11 +1,12 @@
+import 'dart:math';
+
 import 'package:bloc/bloc.dart';
 import 'package:contact_list_bloc/bloc/bloc.dart';
+import 'package:contact_list_bloc/model/contact.dart';
 import 'package:contact_list_bloc/page/ListPage.dart';
 import 'package:contact_list_bloc/page/splashpage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'model/contact.dart';
 
 void main() {
   BlocSupervisor.delegate = _Deligate();
@@ -44,28 +45,73 @@ class _Deligate extends BlocDelegate {
   }
 }
 
-class ItemList extends StatelessWidget {
-  final List<Contact> contacts = [];
+class ItemList extends StatefulWidget {
+  @override
+  _ItemListState createState() => _ItemListState();
+}
+
+class _ItemListState extends State<ItemList> {
+  ItemBloc _itemBloc;
+
+  List<Contact> contacts = [];
+
+  @override
+  void initState() {
+    _itemBloc = BlocProvider.of<ItemBloc>(context);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    for (var i = 0; i <= 5; i++) {
-      contacts.add(new Contact(title: 'item$i', number: '0912536192$i'));
-    }
-
     return BlocBuilder<ItemBloc, ItemState>(builder: (context, state) {
       if (state is InitialState) {
         return SplashPage();
       }
-      if (state is ItemLoading) {
-        return ListPage(
-          contact: contacts,
+      if (state is ItemLoaded) {
+        contacts = state.contactList;
+
+        return Scaffold(
+          appBar: AppBar(
+            title: Text('list'),
+          ),
+          backgroundColor: Colors.white,
+          body: contacts.isNotEmpty
+              ? ListView.builder(
+                  itemBuilder: (context, index) => ListTile(
+                    onTap: () {
+                      _itemBloc.add(ChangeColor(
+                          contactList: contacts,
+                          selectedItem: contacts[index]));
+                    },
+                    title: Text(contacts[index].title),
+                    subtitle: Text(contacts[index].number),
+                    leading: CircleAvatar(
+                      child: Text(
+                        '$index',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      backgroundColor: contacts[index].backgroundColor,
+                    ),
+                    trailing: IconButton(
+                        icon: Icon(Icons.close),
+                        onPressed: () {
+                          var item = contacts[index];
+                          _itemBloc.add(DeleteItem(
+                              deletedItem: item, contactList: contacts));
+                        }),
+                  ),
+                  itemCount: contacts.length,
+                )
+              : Center(child: Text('Empty List')),
         );
       }
-      if (state is ItemPop) {
-        contacts.isNotEmpty ? contacts.removeLast() : null;
-        return ListPage(
-          contact: contacts,
+      if (state is ItemLoading) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text('list'),
+          ),
+          backgroundColor: Colors.white,
+          body: Center(child: CircularProgressIndicator()),
         );
       }
       return null;

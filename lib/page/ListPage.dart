@@ -11,25 +11,29 @@ class ListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.delete),
-          onPressed: () {
-            BlocProvider.of<ItemBloc>(context).add(PressDeleteBtn());
-          }),
-      appBar: AppBar(
-        title: Text('Contact'),
-      ),
-      body: contact.isNotEmpty ? ListView.builder(
-        itemCount: contact.length,
-        itemBuilder: (context, index) => ListTile(
-          title: Text(contact[index].title),
-          subtitle: Text(contact[index].number),
-          leading: CircleAvatar(
-            child: Text('$index'),
-            backgroundColor: Colors.greenAccent,
-          ),
+        appBar: AppBar(
+          title: Text('Contact'),
         ),
-      ) : Center(child:Text('<< finished >>',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25),))
-    );
+        body: contact.isNotEmpty
+            ? ListView.builder(
+                itemCount: contact.length,
+                itemBuilder: (context, index) => ListTile(
+                  title: Text(contact[index].title),
+                  subtitle: Text(contact[index].number),
+                  leading: CircleAvatar(
+                    child: Text('$index'),
+                    backgroundColor: Colors.greenAccent,
+                  ),
+                  trailing: IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () {
+                      }),
+                ),
+              )
+            : Center(
+                child: Text(
+                '<< finished >>',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+              )));
   }
 }
