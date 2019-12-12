@@ -38,15 +38,24 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
 
       yield ItemLoaded(contactList: updatedList);
     } else if (event is ChangeColor) {
-
-      final List<Contact> newList =
-          (state as ItemLoaded).contactList.map<Contact>((item) {
-        return item.title == event.selectedItem.title
-            ? item.backgroundColor = getRandomColor()
-            : item;
+      final List<Contact> newList = event.contactList.map<Contact>((item) {
+        if (item.title == event.selectedItem.title) {
+          return item.copyWith(
+            backgroundColor: getRandomColor(),
+          );
+        } else {
+          return item;
+        }
       }).toList();
 
-      yield ItemLoaded(contactList: newList);
+      print("isNewList Equal to old LIst: ${newList == event.contactList}");
+      print("oldState: $state");
+      var oldState = state;
+      yield state is ItemLoaded
+          ? (state as ItemLoaded).copyWith(newList)
+          : ItemLoaded(contactList: newList);
+      print("newState: $state");
+      print("isNewState Equal to old State: ${state == oldState}");
     }
   }
 }

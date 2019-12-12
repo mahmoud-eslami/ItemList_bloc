@@ -66,46 +66,9 @@ class _ItemListState extends State<ItemList> {
     return BlocBuilder<ItemBloc, ItemState>(builder: (context, state) {
       if (state is InitialState) {
         return SplashPage();
-      }
-      if (state is ItemLoaded) {
+      } else if (state is ItemLoaded) {
         contacts = state.contactList;
-
-        return Scaffold(
-          appBar: AppBar(
-            title: Text('list'),
-          ),
-          backgroundColor: Colors.white,
-          body: contacts.isNotEmpty
-              ? ListView.builder(
-                  itemBuilder: (context, index) => ListTile(
-                    onTap: () {
-                      _itemBloc.add(ChangeColor(
-                          contactList: contacts,
-                          selectedItem: contacts[index]));
-                    },
-                    title: Text(contacts[index].title),
-                    subtitle: Text(contacts[index].number),
-                    leading: CircleAvatar(
-                      child: Text(
-                        '$index',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      backgroundColor: contacts[index].backgroundColor,
-                    ),
-                    trailing: IconButton(
-                        icon: Icon(Icons.close),
-                        onPressed: () {
-                          var item = contacts[index];
-                          _itemBloc.add(DeleteItem(
-                              deletedItem: item, contactList: contacts));
-                        }),
-                  ),
-                  itemCount: contacts.length,
-                )
-              : Center(child: Text('Empty List')),
-        );
-      }
-      if (state is ItemLoading) {
+      } else if (state is ItemLoading) {
         return Scaffold(
           appBar: AppBar(
             title: Text('list'),
@@ -114,7 +77,40 @@ class _ItemListState extends State<ItemList> {
           body: Center(child: CircularProgressIndicator()),
         );
       }
-      return null;
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('list'),
+        ),
+        backgroundColor: Colors.white,
+        body: contacts.isNotEmpty
+            ? ListView.builder(
+          itemBuilder: (context, index) => ListTile(
+            onTap: () {
+              _itemBloc.add(ChangeColor(
+                  contactList: contacts,
+                  selectedItem: contacts[index]));
+            },
+            title: Text(contacts[index].title),
+            subtitle: Text(contacts[index].number),
+            leading: CircleAvatar(
+              child: Text(
+                '${contacts[index].number}',
+                style: TextStyle(color: Colors.white),
+              ),
+              backgroundColor: contacts[index].backgroundColor,
+            ),
+            trailing: IconButton(
+                icon: Icon(Icons.close),
+                onPressed: () {
+                  var item = contacts[index];
+                  _itemBloc.add(DeleteItem(
+                      deletedItem: item, contactList: contacts));
+                }),
+          ),
+          itemCount: contacts.length,
+        )
+            : Center(child: Text('Empty List')),
+      );
     });
   }
 }

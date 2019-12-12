@@ -7,8 +7,6 @@ abstract class ItemState extends Equatable {
 }
 
 class InitialState extends ItemState {
-
-
   @override
   String toString() {
     return 'InitialState{}';
@@ -26,12 +24,14 @@ class ItemLoaded extends ItemState {
   @override
   List<Object> get props => [contactList];
 
+  ItemLoaded copyWith(List<Contact> contactList) => ItemLoaded(
+        contactList: contactList ?? this.contactList,
+      );
+
   @override
   String toString() {
     return 'ItemLoaded{contactList: $contactList}';
   }
-
-
 }
 
 class ItemLoading extends ItemState {
@@ -42,7 +42,4 @@ class ItemLoading extends ItemState {
   String toString() {
     return 'ItemLoading{}';
   }
-
-
 }
-
