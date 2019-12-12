@@ -1,15 +1,12 @@
-import 'dart:math';
-
 import 'package:bloc/bloc.dart';
 import 'package:contact_list_bloc/bloc/bloc.dart';
 import 'package:contact_list_bloc/model/contact.dart';
-import 'package:contact_list_bloc/page/ListPage.dart';
 import 'package:contact_list_bloc/page/splashpage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
-  BlocSupervisor.delegate = _Deligate();
+  BlocSupervisor.delegate = Delegate();
   runApp(MyApp());
 }
 
@@ -31,7 +28,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class _Deligate extends BlocDelegate {
+class Delegate extends BlocDelegate {
   @override
   void onError(Bloc bloc, Object error, StackTrace stacktrace) {
     super.onError(bloc, error, stacktrace);
@@ -84,31 +81,30 @@ class _ItemListState extends State<ItemList> {
         backgroundColor: Colors.white,
         body: contacts.isNotEmpty
             ? ListView.builder(
-          itemBuilder: (context, index) => ListTile(
-            onTap: () {
-              _itemBloc.add(ChangeColor(
-                  contactList: contacts,
-                  selectedItem: contacts[index]));
-            },
-            title: Text(contacts[index].title),
-            subtitle: Text(contacts[index].number),
-            leading: CircleAvatar(
-              child: Text(
-                '${contacts[index].number}',
-                style: TextStyle(color: Colors.white),
-              ),
-              backgroundColor: contacts[index].backgroundColor,
-            ),
-            trailing: IconButton(
-                icon: Icon(Icons.close),
-                onPressed: () {
-                  var item = contacts[index];
-                  _itemBloc.add(DeleteItem(
-                      deletedItem: item, contactList: contacts));
-                }),
-          ),
-          itemCount: contacts.length,
-        )
+                itemBuilder: (context, index) => ListTile(
+                  onTap: () {
+                    _itemBloc.add(ChangeColor(
+                        contactList: contacts, selectedItem: contacts[index]));
+                  },
+                  title: Text(contacts[index].title),
+                  subtitle: Text(contacts[index].number),
+                  leading: CircleAvatar(
+                    child: Text(
+                      '$index',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    backgroundColor: contacts[index].backgroundColor,
+                  ),
+                  trailing: IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () {
+                        var item = contacts[index];
+                        _itemBloc.add(DeleteItem(
+                            deletedItem: item, contactList: contacts));
+                      }),
+                ),
+                itemCount: contacts.length,
+              )
             : Center(child: Text('Empty List')),
       );
     });
