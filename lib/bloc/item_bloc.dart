@@ -38,29 +38,13 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
 
       yield ItemLoaded(contactList: updatedList);
     } else if (event is ChangeColor) {
-      event.contactList.forEach((item) {
-        if (item == event.selectedItem) {
-          item.backgroundColor = getRandomColor();
-        }
-      });
-//      for(var i=0;i<event.contactList.length;i++){
-//        if(event.contactList[i] == event.selectedItem){
-//          event.contactList[i].backgroundColor = getRandomColor();
-//        }
-//      }
-//      var updatedList = event.contactList.where((item) {
-//        if(item.backgroundColor == event.selectedItem.backgroundColor){
-//          item.backgroundColor = getRandomColor();
-//        }
-//        return;
-//      }).toList();
-//      var list = List.from(event.contactList);
-      final newList = List<Contact>.generate(
-          10,
-          (i) => Contact(
-              title: event.contactList[i].title,
-              number: event.contactList[i].number,
-              backgroundColor: event.contactList[i].backgroundColor));
+
+      final List<Contact> newList =
+          (state as ItemLoaded).contactList.map<Contact>((item) {
+        return item.title == event.selectedItem.title
+            ? item.backgroundColor = getRandomColor()
+            : item;
+      }).toList();
 
       yield ItemLoaded(contactList: newList);
     }
